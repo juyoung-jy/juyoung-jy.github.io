@@ -11,8 +11,8 @@
     --bg: #faf8fd;
     --fg: #2a2140;
     --muted: #7c74a0;
-    --accent: #8b5cf6;
-    --accent-deep: #6d28d9;
+    --accent: #cabef2;
+    --accent-deep: #8b5cf6;
     --card-bg: #ffffff;
     --border: #e6ddf7;
     --max-w: 760px;
@@ -23,8 +23,8 @@
       --bg: #f5f1fb;
       --fg: #2a2140;
       --muted: #7c74a0;
-      --accent: #8b5cf6;
-      --accent-deep: #6d28d9;
+      --accent: #cabef2;
+      --accent-deep: #8b5cf6;
       --card-bg: #ffffff;
       --border: #e6ddf7;
     }
@@ -160,7 +160,7 @@
     width: 7px;
     height: 7px;
     border-radius: 50%;
-    background: var(--accent);
+    background: var(--accent-deep);
     flex-shrink: 0;
     animation: pulse 1.8s ease-in-out infinite;
   }
@@ -197,7 +197,7 @@
     font-size: 13px;
     font-weight: 800;
     color: #fff;
-    background: var(--accent);
+    background: var(--accent-deep);
     padding: 3px 8px;
     border-radius: 3px;
     letter-spacing: 0;
@@ -210,15 +210,6 @@
 
   #about p + p { margin-top: 12px; }
 
-  #about p:first-of-type::first-letter {
-    float: left;
-    font-size: 3.2em;
-    font-weight: 900;
-    line-height: 0.8;
-    margin: 4px 6px 0 0;
-    color: var(--accent);
-  }
-
   .tags {
     list-style: none;
     margin: 0;
@@ -230,7 +221,7 @@
 
   .tags li {
     border: 2px solid var(--fg);
-    background: var(--accent);
+    background: var(--accent-deep);
     color: #fff;
     padding: 8px 14px;
     border-radius: 999px;
@@ -312,7 +303,7 @@
   }
 
   .links a:hover {
-    background: var(--accent);
+    background: var(--accent-deep);
     color: #fff;
     transform: translate(-2px, -2px);
     box-shadow: 6px 6px 0 var(--fg);
