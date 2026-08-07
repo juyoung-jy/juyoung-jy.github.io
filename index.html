@@ -12,9 +12,10 @@
     --fg: #2a2140;
     --muted: #7c74a0;
     --accent: #8b5cf6;
+    --accent-deep: #6d28d9;
     --card-bg: #ffffff;
     --border: #e6ddf7;
-    --max-w: 720px;
+    --max-w: 760px;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -23,6 +24,7 @@
       --fg: #2a2140;
       --muted: #7c74a0;
       --accent: #8b5cf6;
+      --accent-deep: #6d28d9;
       --card-bg: #ffffff;
       --border: #e6ddf7;
     }
@@ -54,47 +56,90 @@
   }
 
   header.hero {
+    position: relative;
     padding-top: clamp(56px, 12vw, 96px);
-    padding-bottom: 40px;
+    padding-bottom: 44px;
+    overflow: hidden;
+  }
+
+  header.hero::before {
+    content: "";
+    position: absolute;
+    top: -40px;
+    right: -60px;
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    background-image: radial-gradient(var(--accent) 1.6px, transparent 1.6px);
+    background-size: 13px 13px;
+    opacity: 0.35;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  header.hero > * {
+    position: relative;
+    z-index: 1;
   }
 
   .eyebrow {
-    font-size: 12px;
-    letter-spacing: 0.14em;
-    color: var(--accent);
-    font-weight: 700;
-    margin: 0 0 14px;
+    display: inline-block;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    color: #fff;
+    background: var(--fg);
+    font-weight: 800;
+    margin: 0 0 20px;
+    padding: 5px 12px;
     text-transform: uppercase;
+    transform: rotate(-2deg);
+    border-radius: 3px;
   }
 
   h1 {
-    font-size: clamp(32px, 6vw, 48px);
-    margin: 0 0 6px;
-    font-weight: 800;
-    letter-spacing: -0.02em;
+    font-size: clamp(38px, 9vw, 64px);
+    margin: 0 0 10px;
+    font-weight: 900;
+    letter-spacing: -0.03em;
+    text-transform: uppercase;
+    line-height: 1.02;
+    color: var(--fg);
+    text-shadow: 5px 5px 0 var(--accent);
   }
 
   h1 .en {
     display: inline-block;
-    font-size: 0.4em;
-    font-weight: 500;
-    color: var(--muted);
-    margin-left: 10px;
-    letter-spacing: 0;
+    font-size: 0.28em;
+    font-weight: 700;
+    color: var(--fg);
+    background: var(--card-bg);
+    border: 2px solid var(--fg);
+    margin-left: 12px;
+    padding: 3px 8px;
+    letter-spacing: 0.02em;
+    text-shadow: none;
     vertical-align: middle;
+    border-radius: 4px;
   }
 
   .tagline {
-    font-size: clamp(16px, 2.4vw, 19px);
+    font-size: clamp(17px, 2.6vw, 21px);
+    font-weight: 700;
+    font-style: italic;
     color: var(--fg);
-    margin: 14px 0 6px;
-    max-width: 46ch;
+    margin: 24px 0 14px;
+    padding-left: 16px;
+    border-left: 4px solid var(--accent);
+    max-width: 44ch;
   }
 
   .affiliation {
     color: var(--muted);
-    font-size: 15px;
-    margin: 0 0 22px;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    margin: 0 0 24px;
   }
 
   .status {
@@ -102,11 +147,13 @@
     align-items: center;
     gap: 8px;
     font-size: 13px;
-    color: var(--muted);
+    color: var(--fg);
+    font-weight: 600;
     background: var(--card-bg);
-    border: 1px solid var(--border);
+    border: 2px solid var(--fg);
     padding: 8px 14px;
     border-radius: 999px;
+    box-shadow: 3px 3px 0 var(--accent);
   }
 
   .status .dot {
@@ -123,18 +170,37 @@
     50% { opacity: 0.35; }
   }
 
+  main {
+    counter-reset: section;
+  }
+
   section {
-    padding: 36px 0;
-    border-top: 1px solid var(--border);
+    counter-increment: section;
+    padding: 40px 0;
+    border-top: 3px solid var(--fg);
   }
 
   h2 {
-    font-size: 12px;
-    letter-spacing: 0.14em;
-    color: var(--muted);
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    font-size: clamp(20px, 4vw, 26px);
+    letter-spacing: -0.01em;
+    color: var(--fg);
     text-transform: uppercase;
-    margin: 0 0 18px;
-    font-weight: 700;
+    margin: 0 0 22px;
+    font-weight: 900;
+  }
+
+  h2::before {
+    content: "0" counter(section);
+    font-size: 13px;
+    font-weight: 800;
+    color: #fff;
+    background: var(--accent);
+    padding: 3px 8px;
+    border-radius: 3px;
+    letter-spacing: 0;
   }
 
   #about p {
@@ -143,6 +209,15 @@
   }
 
   #about p + p { margin-top: 12px; }
+
+  #about p:first-of-type::first-letter {
+    float: left;
+    font-size: 3.2em;
+    font-weight: 900;
+    line-height: 0.8;
+    margin: 4px 6px 0 0;
+    color: var(--accent);
+  }
 
   .tags {
     list-style: none;
@@ -154,47 +229,58 @@
   }
 
   .tags li {
-    border: 1px solid var(--border);
-    background: var(--card-bg);
+    border: 2px solid var(--fg);
+    background: var(--accent);
+    color: #fff;
     padding: 8px 14px;
     border-radius: 999px;
-    font-size: 14px;
+    font-size: 13px;
+    font-weight: 800;
+    box-shadow: 3px 3px 0 var(--fg);
+    transform: rotate(-1.5deg);
   }
+
+  .tags li:nth-child(even) { transform: rotate(1.5deg); }
+  .tags li:nth-child(3n) { transform: rotate(-1deg); }
 
   .grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 16px;
+    gap: 22px;
   }
 
   .card {
-    border: 1px solid var(--border);
+    border: 2px solid var(--fg);
     background: var(--card-bg);
-    border-radius: 14px;
+    border-radius: 8px;
     padding: 20px;
-    transition: border-color 0.2s ease, transform 0.2s ease;
+    box-shadow: 6px 6px 0 var(--accent);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
   }
 
   .card:hover {
-    border-color: var(--accent);
-    transform: translateY(-2px);
+    transform: translate(-3px, -3px);
+    box-shadow: 9px 9px 0 var(--accent);
   }
 
   .card h3 {
-    margin: 0 0 6px;
-    font-size: 17px;
+    margin: 0 0 8px;
+    font-size: 18px;
+    font-weight: 800;
     display: flex;
     align-items: center;
     gap: 8px;
   }
 
   .card .tag {
-    font-size: 11px;
-    color: var(--accent);
-    border: 1px solid var(--accent);
-    padding: 2px 8px;
-    border-radius: 999px;
-    font-weight: 600;
+    font-size: 10.5px;
+    color: #fff;
+    background: var(--fg);
+    padding: 2px 9px;
+    border-radius: 4px;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    transform: rotate(-3deg);
   }
 
   .card p {
@@ -206,7 +292,7 @@
   .links {
     display: flex;
     flex-wrap: wrap;
-    gap: 12px;
+    gap: 16px;
   }
 
   .links a {
@@ -215,24 +301,31 @@
     gap: 8px;
     color: var(--fg);
     text-decoration: none;
-    border: 1px solid var(--border);
+    border: 2px solid var(--fg);
     background: var(--card-bg);
     padding: 10px 16px;
-    border-radius: 10px;
+    border-radius: 8px;
     font-size: 14px;
-    transition: border-color 0.2s ease, color 0.2s ease;
+    font-weight: 700;
+    box-shadow: 4px 4px 0 var(--accent);
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease, color 0.15s ease;
   }
 
   .links a:hover {
-    border-color: var(--accent);
-    color: var(--accent);
+    background: var(--accent);
+    color: #fff;
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0 var(--fg);
   }
 
   footer {
-    padding: 30px 24px 60px;
+    padding: 34px 24px 60px;
     color: var(--muted);
-    font-size: 13px;
-    border-top: 1px solid var(--border);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    border-top: 3px solid var(--fg);
     margin-top: 10px;
   }
 
@@ -243,12 +336,20 @@
   @media (max-width: 400px) {
     h1 .en { display: block; margin: 4px 0 0; }
   }
+
+  @media (max-width: 480px) {
+    h1 { text-shadow: 3px 3px 0 var(--accent); }
+    .card { box-shadow: 4px 4px 0 var(--accent); }
+    .card:hover { box-shadow: 6px 6px 0 var(--accent); }
+    .links a, .status { box-shadow: 3px 3px 0 var(--accent); }
+    header.hero::before { width: 140px; height: 140px; top: -20px; right: -40px; }
+  }
 </style>
 </head>
 <body>
 
 <header class="hero">
-  <p class="eyebrow">Personal Site</p>
+  <p class="eyebrow">Personal Site — Vol. 01</p>
   <h1>이인공지능<span class="en">AI Lee</span></h1>
   <p class="tagline">이름은 인공지능인데, 인공지능보다 동네 맛집을 더 잘 찾습니다.</p>
   <p class="affiliation">KAIST 재미공학과 · 재미있는연구실 (Department of Fun Engineering)</p>
