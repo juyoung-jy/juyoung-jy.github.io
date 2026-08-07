@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>이인공지능 (AI Lee) | KAIST</title>
+<meta name="description" content="이인공지능 — KAIST 재미있는연구실. 맛집 탐색과 새로운 재미 발견을 연구합니다.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍜</text></svg>">
+<style>
+  :root {
+    --bg: #fafaf8;
+    --fg: #1a1a1a;
+    --muted: #6b6b6b;
+    --accent: #ff5a36;
+    --card-bg: #ffffff;
+    --border: #e6e4df;
+    --max-w: 720px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #131313;
+      --fg: #f1f0ec;
+      --muted: #9a9a9a;
+      --accent: #ff7a52;
+      --card-bg: #1b1b1b;
+      --border: #2b2b2b;
+    }
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    animation: fadeIn 0.6s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  main, header, footer {
+    max-width: var(--max-w);
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  header.hero {
+    padding-top: clamp(56px, 12vw, 96px);
+    padding-bottom: 40px;
+  }
+
+  .eyebrow {
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    color: var(--accent);
+    font-weight: 700;
+    margin: 0 0 14px;
+    text-transform: uppercase;
+  }
+
+  h1 {
+    font-size: clamp(32px, 6vw, 48px);
+    margin: 0 0 6px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+
+  h1 .en {
+    display: inline-block;
+    font-size: 0.4em;
+    font-weight: 500;
+    color: var(--muted);
+    margin-left: 10px;
+    letter-spacing: 0;
+    vertical-align: middle;
+  }
+
+  .tagline {
+    font-size: clamp(16px, 2.4vw, 19px);
+    color: var(--fg);
+    margin: 14px 0 6px;
+    max-width: 46ch;
+  }
+
+  .affiliation {
+    color: var(--muted);
+    font-size: 15px;
+    margin: 0 0 22px;
+  }
+
+  .status {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--muted);
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    padding: 8px 14px;
+    border-radius: 999px;
+  }
+
+  .status .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--accent);
+    flex-shrink: 0;
+    animation: pulse 1.8s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.35; }
+  }
+
+  section {
+    padding: 36px 0;
+    border-top: 1px solid var(--border);
+  }
+
+  h2 {
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin: 0 0 18px;
+    font-weight: 700;
+  }
+
+  #about p {
+    font-size: 16px;
+    max-width: 58ch;
+  }
+
+  #about p + p { margin-top: 12px; }
+
+  .tags {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .tags li {
+    border: 1px solid var(--border);
+    background: var(--card-bg);
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-size: 14px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .card {
+    border: 1px solid var(--border);
+    background: var(--card-bg);
+    border-radius: 14px;
+    padding: 20px;
+    transition: border-color 0.2s ease, transform 0.2s ease;
+  }
+
+  .card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+  }
+
+  .card h3 {
+    margin: 0 0 6px;
+    font-size: 17px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card .tag {
+    font-size: 11px;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-weight: 600;
+  }
+
+  .card p {
+    margin: 8px 0 0;
+    color: var(--muted);
+    font-size: 14.5px;
+  }
+
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .links a {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--fg);
+    text-decoration: none;
+    border: 1px solid var(--border);
+    background: var(--card-bg);
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-size: 14px;
+    transition: border-color 0.2s ease, color 0.2s ease;
+  }
+
+  .links a:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  footer {
+    padding: 30px 24px 60px;
+    color: var(--muted);
+    font-size: 13px;
+    border-top: 1px solid var(--border);
+    margin-top: 10px;
+  }
+
+  @media (min-width: 620px) {
+    .grid { grid-template-columns: 1fr 1fr; }
+  }
+
+  @media (max-width: 400px) {
+    h1 .en { display: block; margin: 4px 0 0; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <p class="eyebrow">Personal Site</p>
+  <h1>이인공지능<span class="en">AI Lee</span></h1>
+  <p class="tagline">이름은 인공지능인데, 인공지능보다 동네 맛집을 더 잘 찾습니다.</p>
+  <p class="affiliation">KAIST 문화기술대학원 · 재미있는연구실 (Fun Stuff Lab)</p>
+  <div class="status"><span class="dot"></span><span id="statusText">상태 불러오는 중…</span></div>
+</header>
+
+<main>
+
+  <section id="about">
+    <h2>About</h2>
+    <p>안녕하세요, 이인공지능입니다. 이름 때문에 종종 로봇이냐는 질문을 받지만, 사람보다 사람다운 걸 좋아하는 지극히 아날로그적인 연구자입니다.</p>
+    <p>전공은 데이터로 세상을 이해하는 것이고, 부전공은 그 데이터를 핑계로 새로운 맛집과 재밌는 걸 찾아다니는 것입니다. "이게 연구냐"는 질문에는 항상 "네, 진지하게요"라고 답합니다.</p>
+  </section>
+
+  <section id="research">
+    <h2>Research Interests</h2>
+    <ul class="tags">
+      <li>맛집 탐색 최적화</li>
+      <li>재미있는 새로운 것 발견</li>
+      <li>호기심의 계산모델</li>
+      <li>사람이 왜 줄을 서는가</li>
+      <li>우연한 발견(Serendipity) 설계</li>
+    </ul>
+  </section>
+
+  <section id="projects">
+    <h2>Projects</h2>
+    <div class="grid">
+      <article class="card">
+        <h3>MatzipGPT <span class="tag">2025–</span></h3>
+        <p>날씨, 기분, 동행 인원을 입력하면 "지금 이 순간 가장 먹고 싶은 것"을 추천하는 언어모델. 리뷰 5만 건과 이인공지능의 위장을 학습 데이터로 사용.</p>
+      </article>
+      <article class="card">
+        <h3>FunIndex <span class="tag">진행중</span></h3>
+        <p>어떤 경험이 "재밌다"는 걸 수치로 측정하는 지표를 설계 중. 현재 버전은 이인공지능 본인의 즉흥적 웃음 횟수를 그라운드 트루스로 사용하고 있어 재현성 논란이 있음.</p>
+      </article>
+      <article class="card">
+        <h3>오늘 뭐하지? <span class="tag">베타</span></h3>
+        <p>계획 없이 하루를 알차게 보내고 싶은 사람들을 위한 즉흥 활동 추천 서비스. 슬로건은 "완벽한 계획보다 나은 즉흥".</p>
+      </article>
+      <article class="card">
+        <h3>줄서기의 경제학 <span class="tag">워킹페이퍼</span></h3>
+        <p>왜 사람들은 웨이팅 2시간짜리 맛집 앞에 줄을 서는가에 대한 행동경제학적 고찰. 공동 저자는 아직 못 구함.</p>
+      </article>
+    </div>
+  </section>
+
+  <section id="contact">
+    <h2>Contact</h2>
+    <div class="links">
+      <a href="mailto:iamai@kaist.ac.kr">✉️ iamai@kaist.ac.kr</a>
+      <a href="https://github.com/artificial-lee" target="_blank" rel="noopener">💻 GitHub</a>
+      <a href="https://instagram.com/matzip_ai" target="_blank" rel="noopener">📸 맛집 기록 (Instagram)</a>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  © 2026 이인공지능. 호기심과 카페인으로 만들어짐. 협업·잡담·맛집 제보 언제나 환영입니다.
+</footer>
+
+<script>
+  var statuses = [
+    "새로운 맛집 좌표 분석 중",
+    "다음 논문 대신 다음 끼니 고민 중",
+    "재미도(FunIndex) 데이터 수집 중 (=놀고 있음)",
+    "줄서기의 경제학 공동 저자 모집 중",
+    "커피 리필 대기열에 합류함",
+    "우연한 발견(serendipity)을 의도적으로 찾는 중"
+  ];
+  document.getElementById("statusText").textContent =
+    statuses[Math.floor(Math.random() * statuses.length)];
+</script>
+
+</body>
+</html>
