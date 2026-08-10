@@ -1,18 +1,17 @@
 <!DOCTYPE html>
-<html lang="ko">
-<head>
+<html lang="ko"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>이인공지능 (AI Lee) | KAIST</title>
-<meta name="description" content="이인공지능 — KAIST 재미있는연구실. 맛집 탐색과 새로운 재미 발견을 연구합니다.">
 <meta property="og:type" content="website">
-<meta property="og:title" content="이인공지능 (AI Lee) | KAIST">
-<meta property="og:description" content="이름은 인공지능인데, 인공지능보다 동네 맛집을 더 잘 찾습니다.">
+<meta property="og:title" content="AI LEE | KAIST">
+<meta property="og:description" content="인공지능보다는 동네 맛집 연구">
 <meta property="og:url" content="https://juyoung-jy.github.io/">
 <meta property="og:image" content="https://juyoung-jy.github.io/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
+<title> AI LEE | KAIST</title>
+<meta name="description" content="AI LEE — KAIST 재미있는연구실. 맛집 탐색과 새로운 재미 발견을 연구합니다.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍜</text></svg>">
 <style>
   :root {
@@ -346,20 +345,29 @@
 </style>
 </head>
 <body>
-
+    
 <header class="hero">
   <p class="eyebrow">Personal Site — Vol. 01</p>
-  <h1>이인공지능<span class="en">AI Lee</span></h1>
-  <p class="tagline">이름은 인공지능인데, 인공지능보다 동네 맛집을 더 잘 찾습니다.</p>
+  <h1>AI LEE<span class="en">AI </span></h1>
+  <p class="tagline">인공지능과 동네 맛집</p>
   <p class="affiliation">KAIST 재미공학과 · 재미있는연구실 (Department of Fun Engineering)</p>
-  <div class="status"><span class="dot"></span><span id="statusText">상태 불러오는 중…</span></div>
+  <div class="status"><span class="dot"></span><span id="statusText">우연한 발견(serendipity)을 의도적으로 찾는 중</span></div>
 </header>
 
+
+<button id="hi" style="display:block; margin:20px auto;">버튼 눌러보기</button>
+<script>
+  document.getElementById('hi').onclick = () => alert('안녕!');
+</script>
+
+
+
+    
 <main>
 
   <section id="about">
     <h2>About</h2>
-    <p>안녕하세요, 이인공지능입니다. 이름 때문에 종종 로봇이냐는 질문을 받지만, 사람보다 사람다운 걸 좋아하는 지극히 아날로그적인 연구자입니다.</p>
+    <p>사람보다 사람다운 걸 좋아하는 지극히 아날로그적인 연구자입니다.</p>
     <p>전공은 데이터로 세상을 이해하는 것이고, 부전공은 그 데이터를 핑계로 새로운 맛집과 재밌는 걸 찾아다니는 것입니다. "이게 연구냐"는 질문에는 항상 "네, 진지하게요"라고 답합니다.</p>
   </section>
 
@@ -408,7 +416,7 @@
 </main>
 
 <footer>
-  © 2026 이인공지능. 호기심과 카페인으로 만들어짐. 협업·잡담·맛집 제보 언제나 환영입니다.
+  © 2026 AI LEE. 호기심으로 만들어짐. 협업·잡담·맛집 제보 언제나 환영입니다.
 </footer>
 
 <script>
@@ -417,12 +425,13 @@
     "다음 논문 대신 다음 끼니 고민 중",
     "재미도(FunIndex) 데이터 수집 중 (=놀고 있음)",
     "줄서기의 경제학 공동 저자 모집 중",
-    "커피 리필 대기열에 합류함",
+    "무한리필 대기열에 합류함",
     "우연한 발견(serendipity)을 의도적으로 찾는 중"
   ];
   document.getElementById("statusText").textContent =
     statuses[Math.floor(Math.random() * statuses.length)];
 </script>
 
-</body>
-</html>
+
+
+</body></html>
