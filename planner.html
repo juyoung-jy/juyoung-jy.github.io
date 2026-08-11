@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>복리 저축 플래너 | AI LEE</title>
+<style>
+  :root {
+    --bg: #faf8fd;
+    --fg: #2a2140;
+    --muted: #7c74a0;
+    --accent: #cabef2;
+    --accent-deep: #8b5cf6;
+    --card-bg: #ffffff;
+    --border: #e6ddf7;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+    padding: 32px 16px 60px;
+  }
+  .wrap {
+    max-width: 640px;
+    margin: 0 auto;
+  }
+  h1 {
+    font-size: clamp(22px, 5vw, 28px);
+    font-weight: 900;
+    margin: 0 0 4px;
+  }
+  .sub {
+    color: var(--muted);
+    font-size: 14px;
+    margin: 0 0 28px;
+  }
+  .card {
+    background: var(--card-bg);
+    border: 2px solid var(--fg);
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 6px 6px 0 var(--accent);
+    margin-bottom: 24px;
+  }
+  .control {
+    margin-bottom: 22px;
+  }
+  .control:last-child { margin-bottom: 0; }
+  .control-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .control-label span.value {
+    color: var(--accent-deep);
+    font-weight: 900;
+    font-size: 15px;
+  }
+  input[type="range"] {
+    width: 100%;
+    accent-color: var(--accent-deep);
+    height: 6px;
+  }
+  .result-card {
+    background: var(--fg);
+    color: #fff;
+    border-radius: 12px;
+    padding: 24px;
+    text-align: center;
+    margin-bottom: 24px;
+  }
+  .result-card .label {
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    opacity: 0.75;
+    margin-bottom: 8px;
+  }
+  .result-card .value {
+    font-size: clamp(28px, 7vw, 40px);
+    font-weight: 900;
+  }
+  .breakdown {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    margin-top: 14px;
+    font-size: 13px;
+    opacity: 0.85;
+  }
+  .breakdown b { display: block; font-size: 15px; }
+  .legend {
+    display: flex;
+    gap: 18px;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .legend-swatch {
+    width: 16px;
+    height: 3px;
+    border-radius: 2px;
+  }
+  canvas {
+    width: 100%;
+    display: block;
+  }
+  a.back {
+    display: inline-block;
+    margin-top: 8px;
+    color: var(--muted);
+    font-size: 13px;
+    text-decoration: none;
+  }
+  a.back:hover { color: var(--accent-deep); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>복리 저축 플래너</h1>
+  <p class="sub">매년 얼마씩 넣으면, 몇 년 뒤 얼마가 될까?</p>
+
+  <div class="card">
+    <div class="control">
+      <div class="control-label">
+        <span>연간 저축액</span>
+        <span class="value" id="savingLabel">5,000만원</span>
+      </div>
+      <input type="range" id="saving" min="0" max="20000" step="100" value="5000">
+    </div>
+    <div class="control">
+      <div class="control-label">
+        <span>연 수익률</span>
+        <span class="value" id="rateLabel">5.0%</span>
+      </div>
+      <input type="range" id="rate" min="0" max="15" step="0.1" value="5">
+    </div>
+    <div class="control">
+      <div class="control-label">
+        <span>투자 기간</span>
+        <span class="value" id="yearsLabel">20년</span>
+      </div>
+      <input type="range" id="years" min="1" max="50" step="1" value="20">
+    </div>
+  </div>
+
+  <div class="result-card">
+    <div class="label" id="resultLabel">20년 후 예상 자산</div>
+    <div class="value" id="resultValue">13억 6,586만원</div>
+    <div class="breakdown">
+      <div>총 납입 원금<b id="principalValue">10억원</b></div>
+      <div>예상 수익<b id="profitValue">3억 6,586만원</b></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="legend">
+      <div class="legend-item"><span class="legend-swatch" style="background:var(--muted);"></span>원금 누적</div>
+      <div class="legend-item"><span class="legend-swatch" style="background:var(--accent-deep);"></span>복리 적용 총자산</div>
+    </div>
+    <canvas id="chart" height="320"></canvas>
+  </div>
+
+  <a class="back" href="index.html">← 소개 페이지로 돌아가기</a>
+</div>
+
+<script>
+  const savingEl = document.getElementById('saving');
+  const rateEl = document.getElementById('rate');
+  const yearsEl = document.getElementById('years');
+
+  const savingLabel = document.getElementById('savingLabel');
+  const rateLabel = document.getElementById('rateLabel');
+  const yearsLabel = document.getElementById('yearsLabel');
+  const resultLabel = document.getElementById('resultLabel');
+  const resultValue = document.getElementById('resultValue');
+  const principalValue = document.getElementById('principalValue');
+  const profitValue = document.getElementById('profitValue');
+
+  const canvas = document.getElementById('chart');
+  const ctx = canvas.getContext('2d');
+
+  function formatWon(manwon) {
+    manwon = Math.round(manwon);
+    const sign = manwon < 0 ? '-' : '';
+    manwon = Math.abs(manwon);
+    const eok = Math.floor(manwon / 10000);
+    const rest = manwon % 10000;
+    if (eok > 0 && rest > 0) return `${sign}${eok.toLocaleString()}억 ${rest.toLocaleString()}만원`;
+    if (eok > 0) return `${sign}${eok.toLocaleString()}억원`;
+    return `${sign}${rest.toLocaleString()}만원`;
+  }
+
+  function formatWonCompact(manwon) {
+    manwon = Math.round(manwon);
+    if (manwon >= 10000) {
+      const eok = manwon / 10000;
+      return (Math.round(eok * 10) / 10).toString() + '억';
+    }
+    return manwon.toLocaleString() + '만';
+  }
+
+  function computeSeries(saving, rate, years) {
+    const r = rate / 100;
+    const principal = [0];
+    const asset = [0];
+    for (let y = 1; y <= years; y++) {
+      principal.push(principal[y - 1] + saving);
+      asset.push(asset[y - 1] * (1 + r) + saving);
+    }
+    return { principal, asset };
+  }
+
+  function resizeCanvas() {
+    const dpr = window.devicePixelRatio || 1;
+    const cssWidth = canvas.clientWidth;
+    const cssHeight = 320;
+    canvas.width = cssWidth * dpr;
+    canvas.height = cssHeight * dpr;
+    canvas.style.height = cssHeight + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { w: cssWidth, h: cssHeight };
+  }
+
+  function drawChart(principal, asset, years) {
+    const { w, h } = resizeCanvas();
+    ctx.clearRect(0, 0, w, h);
+
+    const padL = 54, padR = 14, padT = 16, padB = 30;
+    const chartW = w - padL - padR;
+    const chartH = h - padT - padB;
+    const maxVal = Math.max(asset[asset.length - 1], 1);
+
+    const xForYear = (y) => padL + (y / years) * chartW;
+    const yForVal = (v) => padT + chartH - (v / maxVal) * chartH;
+
+    // grid + y labels
+    ctx.strokeStyle = '#e6ddf7';
+    ctx.fillStyle = '#7c74a0';
+    ctx.font = '11px -apple-system, sans-serif';
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'middle';
+    const gridLines = 4;
+    for (let i = 0; i <= gridLines; i++) {
+      const val = (maxVal / gridLines) * i;
+      const y = yForVal(val);
+      ctx.beginPath();
+      ctx.moveTo(padL, y);
+      ctx.lineTo(padL + chartW, y);
+      ctx.lineWidth = 1;
+      ctx.stroke();
+      ctx.fillText(formatWonCompact(val), padL - 8, y);
+    }
+
+    // x labels (start, mid, end year)
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
+    [0, Math.round(years / 2), years].forEach((yr) => {
+      ctx.fillText(yr + '년', xForYear(yr), padT + chartH + 8);
+    });
+
+    function drawLine(series, color, dashed, widthPx) {
+      ctx.beginPath();
+      ctx.strokeStyle = color;
+      ctx.lineWidth = widthPx;
+      ctx.setLineDash(dashed ? [5, 4] : []);
+      series.forEach((val, i) => {
+        const x = xForYear(i);
+        const y = yForVal(val);
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    drawLine(principal, '#7c74a0', true, 2);
+    drawLine(asset, '#8b5cf6', false, 3);
+
+    // end point dot for asset line
+    const lastX = xForYear(years);
+    const lastY = yForVal(asset[asset.length - 1]);
+    ctx.beginPath();
+    ctx.arc(lastX, lastY, 4.5, 0, Math.PI * 2);
+    ctx.fillStyle = '#8b5cf6';
+    ctx.fill();
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  }
+
+  function update() {
+    const saving = Number(savingEl.value);
+    const rate = Number(rateEl.value);
+    const years = Number(yearsEl.value);
+
+    savingLabel.textContent = formatWon(saving);
+    rateLabel.textContent = rate.toFixed(1) + '%';
+    yearsLabel.textContent = years + '년';
+
+    const { principal, asset } = computeSeries(saving, rate, years);
+    const finalAsset = asset[asset.length - 1];
+    const finalPrincipal = principal[principal.length - 1];
+    const profit = finalAsset - finalPrincipal;
+
+    resultLabel.textContent = `${years}년 후 예상 자산`;
+    resultValue.textContent = formatWon(finalAsset);
+    principalValue.textContent = formatWon(finalPrincipal);
+    profitValue.textContent = formatWon(profit);
+
+    drawChart(principal, asset, years);
+  }
+
+  [savingEl, rateEl, yearsEl].forEach((el) => el.addEventListener('input', update));
+  window.addEventListener('resize', update);
+
+  update();
+</script>
+</body>
+</html>
