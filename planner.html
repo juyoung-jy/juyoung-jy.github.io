@@ -34,8 +34,30 @@
   .sub {
     color: var(--muted);
     font-size: 14px;
-    margin: 0 0 28px;
+    margin: 0 0 20px;
   }
+  .tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  .tab-btn {
+    flex: 1;
+    border: 2px solid var(--fg);
+    background: var(--card-bg);
+    color: var(--fg);
+    font-weight: 800;
+    font-size: 13px;
+    padding: 10px 8px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  .tab-btn.active {
+    background: var(--fg);
+    color: #fff;
+  }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
   .card {
     background: var(--card-bg);
     border: 2px solid var(--fg);
@@ -96,6 +118,7 @@
   .breakdown b { display: block; font-size: 15px; }
   .legend {
     display: flex;
+    flex-wrap: wrap;
     gap: 18px;
     font-size: 13px;
     font-weight: 700;
@@ -115,6 +138,59 @@
     width: 100%;
     display: block;
   }
+  .redraw-btn {
+    display: block;
+    width: 100%;
+    margin-top: 16px;
+    border: 2px solid var(--fg);
+    background: var(--accent-deep);
+    color: #fff;
+    font-weight: 800;
+    font-size: 14px;
+    padding: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 4px 4px 0 var(--fg);
+    transition: transform 0.1s ease;
+  }
+  .redraw-btn:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--fg); }
+  .mc-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-top: 16px;
+  }
+  .mc-stat {
+    background: var(--bg);
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    padding: 10px;
+    text-align: center;
+  }
+  .mc-stat .k { font-size: 11px; color: var(--muted); margin-bottom: 4px; }
+  .mc-stat .v { font-size: 15px; font-weight: 900; color: var(--fg); }
+  .info-card {
+    background: var(--card-bg);
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 24px;
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--fg);
+  }
+  .info-card h3 {
+    font-size: 14px;
+    margin: 0 0 8px;
+  }
+  .info-card .note {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px dashed var(--border);
+    color: var(--muted);
+    font-size: 12.5px;
+  }
+  .info-card .note b { color: var(--fg); }
   a.back {
     display: inline-block;
     margin-top: 8px;
@@ -130,66 +206,108 @@
   <h1>복리 저축 플래너</h1>
   <p class="sub">매년 얼마씩 넣으면, 몇 년 뒤 얼마가 될까?</p>
 
-  <div class="card">
-    <div class="control">
-      <div class="control-label">
-        <span>연간 저축액</span>
-        <span class="value" id="savingLabel">5,000만원</span>
+  <div class="tabs">
+    <button class="tab-btn active" id="tabBtnPlan">📈 적립 시뮬레이션</button>
+    <button class="tab-btn" id="tabBtnMc">🎲 몬테카를로 시뮬레이션</button>
+  </div>
+
+  <!-- TAB 1: 고정 수익률 -->
+  <div class="tab-panel active" id="tabPlan">
+    <div class="card">
+      <div class="control">
+        <div class="control-label">
+          <span>연간 저축액</span>
+          <span class="value" id="savingLabel">5,000만원</span>
+        </div>
+        <input type="range" id="saving" min="0" max="20000" step="100" value="5000">
       </div>
-      <input type="range" id="saving" min="0" max="20000" step="100" value="5000">
+      <div class="control">
+        <div class="control-label">
+          <span>연 수익률</span>
+          <span class="value" id="rateLabel">5.0%</span>
+        </div>
+        <input type="range" id="rate" min="0" max="15" step="0.1" value="5">
+      </div>
+      <div class="control">
+        <div class="control-label">
+          <span>투자 기간</span>
+          <span class="value" id="yearsLabel">20년</span>
+        </div>
+        <input type="range" id="years" min="1" max="50" step="1" value="20">
+      </div>
     </div>
-    <div class="control">
-      <div class="control-label">
-        <span>연 수익률</span>
-        <span class="value" id="rateLabel">5.0%</span>
+
+    <div class="result-card">
+      <div class="label" id="resultLabel">20년 후 예상 자산</div>
+      <div class="value" id="resultValue">13억 6,586만원</div>
+      <div class="breakdown">
+        <div>총 납입 원금<b id="principalValue">10억원</b></div>
+        <div>예상 수익<b id="profitValue">3억 6,586만원</b></div>
       </div>
-      <input type="range" id="rate" min="0" max="15" step="0.1" value="5">
     </div>
-    <div class="control">
-      <div class="control-label">
-        <span>투자 기간</span>
-        <span class="value" id="yearsLabel">20년</span>
+
+    <div class="card">
+      <div class="legend">
+        <div class="legend-item"><span class="legend-swatch" style="background:var(--muted);"></span>원금 누적</div>
+        <div class="legend-item"><span class="legend-swatch" style="background:var(--accent-deep);"></span>복리 적용 총자산</div>
       </div>
-      <input type="range" id="years" min="1" max="50" step="1" value="20">
+      <canvas id="chart" height="320"></canvas>
     </div>
   </div>
 
-  <div class="result-card">
-    <div class="label" id="resultLabel">20년 후 예상 자산</div>
-    <div class="value" id="resultValue">13억 6,586만원</div>
-    <div class="breakdown">
-      <div>총 납입 원금<b id="principalValue">10억원</b></div>
-      <div>예상 수익<b id="profitValue">3억 6,586만원</b></div>
+  <!-- TAB 2: 몬테카를로 -->
+  <div class="tab-panel" id="tabMc">
+    <div class="card">
+      <div class="control">
+        <div class="control-label">
+          <span>연간 저축액</span>
+          <span class="value" id="mcSavingLabel">5,000만원</span>
+        </div>
+        <input type="range" id="mcSaving" min="0" max="20000" step="100" value="5000">
+      </div>
+      <div class="control">
+        <div class="control-label">
+          <span>투자 기간</span>
+          <span class="value" id="mcYearsLabel">20년</span>
+        </div>
+        <input type="range" id="mcYears" min="1" max="50" step="1" value="20">
+      </div>
+      <button class="redraw-btn" id="redrawBtn">🎲 다시 뽑기</button>
     </div>
-  </div>
 
-  <div class="card">
-    <div class="legend">
-      <div class="legend-item"><span class="legend-swatch" style="background:var(--muted);"></span>원금 누적</div>
-      <div class="legend-item"><span class="legend-swatch" style="background:var(--accent-deep);"></span>복리 적용 총자산</div>
+    <div class="result-card">
+      <div class="label" id="mcResultLabel">20년 후 예상 자산 (중간값)</div>
+      <div class="value" id="mcResultValue">-</div>
+      <div class="mc-stats">
+        <div class="mc-stat"><div class="k">하위 10%</div><div class="v" id="mcP10">-</div></div>
+        <div class="mc-stat"><div class="k">중간값</div><div class="v" id="mcP50">-</div></div>
+        <div class="mc-stat"><div class="k">상위 10%</div><div class="v" id="mcP90">-</div></div>
+      </div>
     </div>
-    <canvas id="chart" height="320"></canvas>
+
+    <div class="card">
+      <div class="legend">
+        <div class="legend-item"><span class="legend-swatch" style="background:rgba(139,92,246,0.25);"></span>개별 시뮬레이션 경로</div>
+        <div class="legend-item"><span class="legend-swatch" style="background:var(--fg);"></span>중간값 경로</div>
+      </div>
+      <canvas id="mcChart" height="320"></canvas>
+    </div>
+
+    <div class="info-card">
+      <h3>몬테카를로 시뮬레이션이란?</h3>
+      <p>"미래 수익률은 매년 이럴 것이다"라고 하나로 단정하는 대신, 과거 데이터에서 있었던 실제 연도별 수익률을 무작위로 수백 번 뽑아 대입해보고, 그 결과들이 넓게 흩어져 있는 범위(분포)를 관찰하는 방법입니다. "다시 뽑기"를 누를 때마다 뽑히는 순서가 달라지므로 결과도 매번 조금씩 바뀝니다.</p>
+      <div class="note">
+        <b>참고</b><br>
+        이 시뮬레이션은 교육용 예시이며 투자 조언이 아닙니다. 과거 수익률(1928~2024년 S&P 500)이 미래 수익을 보장하지 않습니다.
+      </div>
+    </div>
   </div>
 
   <a class="back" href="index.html">← 소개 페이지로 돌아가기</a>
 </div>
 
 <script>
-  const savingEl = document.getElementById('saving');
-  const rateEl = document.getElementById('rate');
-  const yearsEl = document.getElementById('years');
-
-  const savingLabel = document.getElementById('savingLabel');
-  const rateLabel = document.getElementById('rateLabel');
-  const yearsLabel = document.getElementById('yearsLabel');
-  const resultLabel = document.getElementById('resultLabel');
-  const resultValue = document.getElementById('resultValue');
-  const principalValue = document.getElementById('principalValue');
-  const profitValue = document.getElementById('profitValue');
-
-  const canvas = document.getElementById('chart');
-  const ctx = canvas.getContext('2d');
-
+  // ---------- 공통 유틸 ----------
   function formatWon(manwon) {
     manwon = Math.round(manwon);
     const sign = manwon < 0 ? '-' : '';
@@ -210,6 +328,53 @@
     return manwon.toLocaleString() + '만';
   }
 
+  function resizeCanvas(canvas, ctx, cssHeight) {
+    const dpr = window.devicePixelRatio || 1;
+    const cssWidth = canvas.clientWidth;
+    canvas.width = cssWidth * dpr;
+    canvas.height = cssHeight * dpr;
+    canvas.style.height = cssHeight + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { w: cssWidth, h: cssHeight };
+  }
+
+  // ---------- 탭 전환 ----------
+  const tabBtnPlan = document.getElementById('tabBtnPlan');
+  const tabBtnMc = document.getElementById('tabBtnMc');
+  const tabPlan = document.getElementById('tabPlan');
+  const tabMc = document.getElementById('tabMc');
+
+  tabBtnPlan.addEventListener('click', () => {
+    tabBtnPlan.classList.add('active');
+    tabBtnMc.classList.remove('active');
+    tabPlan.classList.add('active');
+    tabMc.classList.remove('active');
+    update();
+  });
+  tabBtnMc.addEventListener('click', () => {
+    tabBtnMc.classList.add('active');
+    tabBtnPlan.classList.remove('active');
+    tabMc.classList.add('active');
+    tabPlan.classList.remove('active');
+    runMonteCarlo();
+  });
+
+  // ================= TAB 1: 고정 수익률 =================
+  const savingEl = document.getElementById('saving');
+  const rateEl = document.getElementById('rate');
+  const yearsEl = document.getElementById('years');
+
+  const savingLabel = document.getElementById('savingLabel');
+  const rateLabel = document.getElementById('rateLabel');
+  const yearsLabel = document.getElementById('yearsLabel');
+  const resultLabel = document.getElementById('resultLabel');
+  const resultValue = document.getElementById('resultValue');
+  const principalValue = document.getElementById('principalValue');
+  const profitValue = document.getElementById('profitValue');
+
+  const canvas = document.getElementById('chart');
+  const ctx = canvas.getContext('2d');
+
   function computeSeries(saving, rate, years) {
     const r = rate / 100;
     const principal = [0];
@@ -221,19 +386,8 @@
     return { principal, asset };
   }
 
-  function resizeCanvas() {
-    const dpr = window.devicePixelRatio || 1;
-    const cssWidth = canvas.clientWidth;
-    const cssHeight = 320;
-    canvas.width = cssWidth * dpr;
-    canvas.height = cssHeight * dpr;
-    canvas.style.height = cssHeight + 'px';
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    return { w: cssWidth, h: cssHeight };
-  }
-
   function drawChart(principal, asset, years) {
-    const { w, h } = resizeCanvas();
+    const { w, h } = resizeCanvas(canvas, ctx, 320);
     ctx.clearRect(0, 0, w, h);
 
     const padL = 54, padR = 14, padT = 16, padB = 30;
@@ -244,7 +398,6 @@
     const xForYear = (y) => padL + (y / years) * chartW;
     const yForVal = (v) => padT + chartH - (v / maxVal) * chartH;
 
-    // grid + y labels
     ctx.strokeStyle = '#e6ddf7';
     ctx.fillStyle = '#7c74a0';
     ctx.font = '11px -apple-system, sans-serif';
@@ -262,7 +415,6 @@
       ctx.fillText(formatWonCompact(val), padL - 8, y);
     }
 
-    // x labels (start, mid, end year)
     ctx.textAlign = 'center';
     ctx.textBaseline = 'top';
     [0, Math.round(years / 2), years].forEach((yr) => {
@@ -287,7 +439,6 @@
     drawLine(principal, '#7c74a0', true, 2);
     drawLine(asset, '#8b5cf6', false, 3);
 
-    // end point dot for asset line
     const lastX = xForYear(years);
     const lastY = yForVal(asset[asset.length - 1]);
     ctx.beginPath();
@@ -322,7 +473,161 @@
   }
 
   [savingEl, rateEl, yearsEl].forEach((el) => el.addEventListener('input', update));
-  window.addEventListener('resize', update);
+
+  // ================= TAB 2: 몬테카를로 시뮬레이션 =================
+  // S&P 500 연간 총수익률(배당 포함) 근사치, 1928~2024년(97개년).
+  // Robert Shiller 교수의 공개 S&P 500 데이터셋(GitHub: datasets/s-and-p-500)의
+  // 월별 종가·배당 데이터를 기반으로 계산한 값이며, 공식 연말 종가 기준 수익률과는
+  // 약간 다를 수 있습니다. 교육용 예시입니다.
+  const SP500_RETURNS = [
+    0.3813,-0.0421,-0.2401,-0.4178,-0.1105,0.5442,-0.028,0.4702,0.3575,-0.3193,
+    0.2248,0.0201,-0.0966,-0.1074,0.1716,0.27,0.2002,0.3814,-0.0909,0.0448,
+    0.0687,0.1647,0.2787,0.268,0.1792,0.0099,0.4806,0.3495,0.0631,-0.0966,
+    0.3778,0.1392,-0.0043,0.301,-0.0972,0.2219,0.1658,0.1254,-0.0833,0.2094,
+    0.152,-0.1167,0.0269,0.1365,0.2188,-0.1686,-0.261,0.3804,0.2252,-0.0631,
+    0.0782,0.1816,0.3023,-0.025,0.192,0.2317,0.0472,0.3136,0.2412,-0.0011,
+    0.188,0.3021,-0.0235,0.2207,0.1551,0.0996,0.0046,0.3842,0.2356,0.3177,
+    0.2549,0.2156,-0.0575,-0.1282,-0.2019,0.2226,0.1282,0.0709,0.1427,0.0631,
+    -0.3923,0.3003,0.1402,0.021,0.168,0.2971,0.1586,0.0204,0.1173,0.2091,
+    -0.0182,0.2615,0.185,0.2826,-0.1499,0.2168,0.2994
+  ];
+
+  const mcSavingEl = document.getElementById('mcSaving');
+  const mcYearsEl = document.getElementById('mcYears');
+  const mcSavingLabel = document.getElementById('mcSavingLabel');
+  const mcYearsLabel = document.getElementById('mcYearsLabel');
+  const mcResultLabel = document.getElementById('mcResultLabel');
+  const mcResultValue = document.getElementById('mcResultValue');
+  const mcP10 = document.getElementById('mcP10');
+  const mcP50 = document.getElementById('mcP50');
+  const mcP90 = document.getElementById('mcP90');
+  const redrawBtn = document.getElementById('redrawBtn');
+
+  const mcCanvas = document.getElementById('mcChart');
+  const mcCtx = mcCanvas.getContext('2d');
+
+  const NUM_SIMS = 400;
+  const DRAW_LINES = 80;
+
+  function runOneSim(saving, years) {
+    const path = [0];
+    for (let y = 1; y <= years; y++) {
+      const r = SP500_RETURNS[Math.floor(Math.random() * SP500_RETURNS.length)];
+      path.push(path[y - 1] * (1 + r) + saving);
+    }
+    return path;
+  }
+
+  function percentile(sortedArr, p) {
+    const idx = (sortedArr.length - 1) * p;
+    const lo = Math.floor(idx), hi = Math.ceil(idx);
+    if (lo === hi) return sortedArr[lo];
+    return sortedArr[lo] + (sortedArr[hi] - sortedArr[lo]) * (idx - lo);
+  }
+
+  function drawMcChart(paths, years, medianPath) {
+    const { w, h } = resizeCanvas(mcCanvas, mcCtx, 320);
+    mcCtx.clearRect(0, 0, w, h);
+
+    const padL = 54, padR = 14, padT = 16, padB = 30;
+    const chartW = w - padL - padR;
+    const chartH = h - padT - padB;
+
+    let maxVal = 1;
+    paths.forEach((p) => { maxVal = Math.max(maxVal, p[p.length - 1]); });
+
+    const xForYear = (y) => padL + (y / years) * chartW;
+    const yForVal = (v) => padT + chartH - (Math.max(v, 0) / maxVal) * chartH;
+
+    mcCtx.strokeStyle = '#e6ddf7';
+    mcCtx.fillStyle = '#7c74a0';
+    mcCtx.font = '11px -apple-system, sans-serif';
+    mcCtx.textAlign = 'right';
+    mcCtx.textBaseline = 'middle';
+    const gridLines = 4;
+    for (let i = 0; i <= gridLines; i++) {
+      const val = (maxVal / gridLines) * i;
+      const y = yForVal(val);
+      mcCtx.beginPath();
+      mcCtx.moveTo(padL, y);
+      mcCtx.lineTo(padL + chartW, y);
+      mcCtx.lineWidth = 1;
+      mcCtx.stroke();
+      mcCtx.fillText(formatWonCompact(val), padL - 8, y);
+    }
+
+    mcCtx.textAlign = 'center';
+    mcCtx.textBaseline = 'top';
+    [0, Math.round(years / 2), years].forEach((yr) => {
+      mcCtx.fillText(yr + '년', xForYear(yr), padT + chartH + 8);
+    });
+
+    // 개별 시뮬레이션 경로 (연한 색, 스파게티 플롯)
+    mcCtx.strokeStyle = 'rgba(139,92,246,0.12)';
+    mcCtx.lineWidth = 1;
+    paths.slice(0, DRAW_LINES).forEach((path) => {
+      mcCtx.beginPath();
+      path.forEach((val, i) => {
+        const x = xForYear(i);
+        const y = yForVal(val);
+        if (i === 0) mcCtx.moveTo(x, y);
+        else mcCtx.lineTo(x, y);
+      });
+      mcCtx.stroke();
+    });
+
+    // 중간값 경로 (진하게)
+    mcCtx.beginPath();
+    mcCtx.strokeStyle = '#2a2140';
+    mcCtx.lineWidth = 3;
+    medianPath.forEach((val, i) => {
+      const x = xForYear(i);
+      const y = yForVal(val);
+      if (i === 0) mcCtx.moveTo(x, y);
+      else mcCtx.lineTo(x, y);
+    });
+    mcCtx.stroke();
+  }
+
+  function runMonteCarlo() {
+    const saving = Number(mcSavingEl.value);
+    const years = Number(mcYearsEl.value);
+
+    mcSavingLabel.textContent = formatWon(saving);
+    mcYearsLabel.textContent = years + '년';
+
+    const paths = [];
+    for (let i = 0; i < NUM_SIMS; i++) {
+      paths.push(runOneSim(saving, years));
+    }
+
+    // 연도별 중간값 경로 계산
+    const medianPath = [];
+    for (let y = 0; y <= years; y++) {
+      const valsAtYear = paths.map((p) => p[y]).sort((a, b) => a - b);
+      medianPath.push(percentile(valsAtYear, 0.5));
+    }
+
+    const finals = paths.map((p) => p[p.length - 1]).sort((a, b) => a - b);
+    const p10 = percentile(finals, 0.1);
+    const p50 = percentile(finals, 0.5);
+    const p90 = percentile(finals, 0.9);
+
+    mcResultLabel.textContent = `${years}년 후 예상 자산 (중간값)`;
+    mcResultValue.textContent = formatWon(p50);
+    mcP10.textContent = formatWon(p10);
+    mcP50.textContent = formatWon(p50);
+    mcP90.textContent = formatWon(p90);
+
+    drawMcChart(paths, years, medianPath);
+  }
+
+  [mcSavingEl, mcYearsEl].forEach((el) => el.addEventListener('input', runMonteCarlo));
+  redrawBtn.addEventListener('click', runMonteCarlo);
+  window.addEventListener('resize', () => {
+    if (tabPlan.classList.contains('active')) update();
+    else runMonteCarlo();
+  });
 
   update();
 </script>
