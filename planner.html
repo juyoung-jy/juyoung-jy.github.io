@@ -191,6 +191,70 @@
     font-size: 12.5px;
   }
   .info-card .note b { color: var(--fg); }
+  .quote-card h3 {
+    margin: 0 0 16px;
+    font-size: 15px;
+    font-weight: 900;
+  }
+  .quote-box {
+    min-height: 110px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 8px 4px;
+  }
+  .quote-text {
+    font-size: 16px;
+    font-weight: 700;
+    font-style: italic;
+    line-height: 1.5;
+    margin: 0 0 10px;
+  }
+  .quote-en {
+    font-size: 12px;
+    color: var(--muted);
+    margin: 0 0 10px;
+  }
+  .quote-author {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent-deep);
+    margin: 0;
+  }
+  .quote-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 18px;
+  }
+  .quote-nav-btn {
+    border: 2px solid var(--fg);
+    background: var(--card-bg);
+    color: var(--fg);
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    font-size: 16px;
+    font-weight: 900;
+    cursor: pointer;
+    line-height: 1;
+  }
+  .quote-nav-btn:hover { background: var(--accent-deep); color: #fff; border-color: var(--accent-deep); }
+  .quote-dots {
+    display: flex;
+    gap: 7px;
+  }
+  .quote-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--border);
+    border: none;
+    cursor: pointer;
+    padding: 0;
+  }
+  .quote-dot.active { background: var(--accent-deep); }
   a.back {
     display: inline-block;
     margin-top: 8px;
@@ -300,6 +364,20 @@
         <b>참고</b><br>
         이 시뮬레이션은 교육용 예시이며 투자 조언이 아닙니다. 과거 수익률(1928~2024년 S&P 500)이 미래 수익을 보장하지 않습니다.
       </div>
+    </div>
+  </div>
+
+  <div class="card quote-card" id="quoteBox">
+    <h3>🧠 멘탈 관리기 — 흔들릴 때 보세요</h3>
+    <div class="quote-box">
+      <p class="quote-text" id="quoteText"></p>
+      <p class="quote-en" id="quoteEn"></p>
+      <p class="quote-author" id="quoteAuthor"></p>
+    </div>
+    <div class="quote-controls">
+      <button class="quote-nav-btn" id="quotePrev" aria-label="이전 명언">‹</button>
+      <div class="quote-dots" id="quoteDots"></div>
+      <button class="quote-nav-btn" id="quoteNext" aria-label="다음 명언">›</button>
     </div>
   </div>
 
@@ -630,6 +708,67 @@
   });
 
   update();
+
+  // ================= 멘탈 관리기 (명언 슬라이더) =================
+  const QUOTES = [
+    { ko: '주식시장은 조급한 사람에게서 인내심 있는 사람에게로 돈이 옮겨가는 장치다.', en: 'The stock market is a device for transferring money from the impatient to the patient.', author: '워런 버핏' },
+    { ko: '우리가 가장 좋아하는 보유 기간은 영원이다.', en: 'Our favorite holding period is forever.', author: '워런 버핏' },
+    { ko: '큰돈은 사고파는 데서 나오는 게 아니라 기다리는 데서 나온다.', en: 'The big money is not in the buying and selling, but in the waiting.', author: '찰리 멍거' },
+    { ko: '시간은 훌륭한 사업의 친구이고, 그저 그런 사업의 적이다.', en: 'Time is the friend of the wonderful business, the enemy of the mediocre.', author: '워런 버핏' },
+    { ko: '시간은 당신의 편이고, 충동은 당신의 적이다.', en: 'Time is your friend; impulse is your enemy.', author: '존 보글' },
+    { ko: '주식에서 돈을 버는 핵심은 겁먹고 시장에서 뛰쳐나가지 않는 것이다.', en: 'The key to making money in stocks is not to get scared out of them.', author: '피터 린치' },
+    { ko: '오늘 누군가 그늘에 앉아 있다면, 그건 오래전에 누군가 나무를 심었기 때문이다.', en: "Someone's sitting in the shade today because someone planted a tree a long time ago.", author: '워런 버핏' },
+    { ko: '단기적으로 시장은 투표소이지만, 장기적으로는 저울이다.', en: 'In the short run, the market is a voting machine; in the long run, it is a weighing machine.', author: '벤저민 그레이엄' },
+    { ko: '다른 사람이 욕심낼 때 두려워하고, 다른 사람이 두려워할 때 욕심내라.', en: 'Be fearful when others are greedy, and greedy when others are fearful.', author: '워런 버핏' },
+    { ko: '시장 타이밍을 맞추려 하지 마라. 그저 시장에 머물러라.', en: "Don't try to time the market; just stay in the market.", author: '존 보글' }
+  ];
+
+  const quoteBox = document.getElementById('quoteBox');
+  const quoteText = document.getElementById('quoteText');
+  const quoteEn = document.getElementById('quoteEn');
+  const quoteAuthor = document.getElementById('quoteAuthor');
+  const quoteDots = document.getElementById('quoteDots');
+  const quotePrev = document.getElementById('quotePrev');
+  const quoteNext = document.getElementById('quoteNext');
+
+  let quoteIndex = 0;
+  let quoteTimer = null;
+
+  QUOTES.forEach((_, i) => {
+    const dot = document.createElement('button');
+    dot.className = 'quote-dot' + (i === 0 ? ' active' : '');
+    dot.setAttribute('aria-label', (i + 1) + '번째 명언로 이동');
+    dot.addEventListener('click', () => showQuote(i));
+    quoteDots.appendChild(dot);
+  });
+
+  function showQuote(i) {
+    quoteIndex = (i + QUOTES.length) % QUOTES.length;
+    const q = QUOTES[quoteIndex];
+    quoteText.textContent = '“' + q.ko + '”';
+    quoteEn.textContent = q.en;
+    quoteAuthor.textContent = '— ' + q.author;
+    Array.from(quoteDots.children).forEach((dot, i2) => {
+      dot.classList.toggle('active', i2 === quoteIndex);
+    });
+  }
+
+  function startQuoteTimer() {
+    stopQuoteTimer();
+    quoteTimer = setInterval(() => showQuote(quoteIndex + 1), 4500);
+  }
+  function stopQuoteTimer() {
+    if (quoteTimer) clearInterval(quoteTimer);
+    quoteTimer = null;
+  }
+
+  quotePrev.addEventListener('click', () => { showQuote(quoteIndex - 1); startQuoteTimer(); });
+  quoteNext.addEventListener('click', () => { showQuote(quoteIndex + 1); startQuoteTimer(); });
+  quoteBox.addEventListener('mouseenter', stopQuoteTimer);
+  quoteBox.addEventListener('mouseleave', startQuoteTimer);
+
+  showQuote(0);
+  startQuoteTimer();
 </script>
 </body>
 </html>
