@@ -1,8 +1,41 @@
-function calculate(a, b, op) {
-  if (op === "+") return a + b;
-  if (op === "-") return a - b;
-  if (op === "*") return a * b;
-  if (op === "/") return a / b;
-}
-// 숫자나 연산자를 바꿀 때마다 이 함수가 다시 실행되어
-// 화면의 결과(calcResult)를 즉시 갱신합니다.
+<!doctype html>
+<html>
+<head>
+  <style>
+    input, select { font-size: 18px; }
+  </style>
+</head>
+<body>
+  <input type="number" id="numA" value="0">
+  <select id="operator">
+    <option value="+">+</option>
+    <option value="-">-</option>
+    <option value="*">×</option>
+    <option value="/">÷</option>
+  </select>
+  <input type="number" id="numB" value="0">
+  <p id="calcResult">0</p>
+
+  <script>
+    function calculate(a, b, op) {
+      if (op === "+") return a + b;
+      if (op === "-") return a - b;
+      if (op === "*") return a * b;
+      if (op === "/") return a / b;
+    }
+    // 숫자나 연산자를 바꿀 때마다 이 함수가 다시 실행되어
+    // 화면의 결과(calcResult)를 즉시 갱신합니다.
+
+    function update() {
+      const a = Number(document.getElementById('numA').value);
+      const b = Number(document.getElementById('numB').value);
+      const op = document.getElementById('operator').value;
+      document.getElementById('calcResult').textContent = calculate(a, b, op);
+    }
+
+    document.getElementById('numA').oninput = update;
+    document.getElementById('numB').oninput = update;
+    document.getElementById('operator').onchange = update;
+  </script>
+</body>
+</html>
